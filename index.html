@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Hello!</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <image id="1" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/tile000.png?v=1648447332093" style="display:none"/>
+    <image id="2" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/tile000.png?v=1648447332093" style="display:none"/>
+    <image id="3" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/tile002.png?v=1648447340499" style="display:none"/>
+    <image id="4" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/tile002.png?v=1648447340499" style="display:none"/>
+    <image id="5" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/tile001.png?v=1648533670537" style="display:none"/>
+    <image id="gun" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/shotgun.png?v=1648696548124" style="display:none"/>
+    <image id="bullet" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/bullets1_0030_Circle------------------.png?v=1648697266944" style="display:none"/>
+    <image id="fire" src="https://cdn.glitch.global/478a898a-fb79-488a-b1f3-58f713358631/b2_01.png?v=1648697582306" style="display:none"/>
+    <canvas id="c" width="800" height="500"></canvas>
+    <script>
+      let canvas = document.getElementById("c");
+      let ctx = canvas.getContext("2d");
+      let bulletCount = 3;
+
+      let components = [];
+      let round = 0;
+      function loop() {
+        let alive = true;
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let component of components) {
+          component.update();
+        }
+        //now, we check overlap between all pairs of components
+        //挖洞 1
+        outer:for(let component of components){
+          if(component.getType() == "Bird"){
+            for(let _compoment of components){
+              if(_compoment.getType() == "Fire" && isOverlap(_compoment, component)){
+                bird.status = 2;
+                break;
+              }
+            }
+          }
+          component.update();
+        }
+        
+        
+        
+        /////////////////////////////////////////////////////////
+
+        
+        
+        ctx.restore();
+        if (alive) {
+          setTimeout(function() {
+            window.requestAnimationFrame(loop);
+          }, 1000 / 45);
+        }else{
+          alert("fail!");
+        }
+      }
+      window.requestAnimationFrame(loop);
+
+      
+
+      function isOverlap(obj1, obj2) {
+        let overlap = !(
+          obj1.x + obj1.width < obj2.x ||
+          obj1.x > obj2.x + obj2.width ||
+          obj1.y + obj1.height < obj2.y ||
+          obj1.y > obj2.y + obj2.height
+        );
+        return overlap;
+      }
+
+      
+      let bird=new Bird(50, 50);
+      components.push(bird);
+      
+      let gun=new Gun(350, 350);
+      components.push(gun);
+      
+      for(let i=1; i<=3; i++){
+        let bullet=new Bullet(650+i*20, 450, i);
+        components.push(bullet);
+      }
+
+      
+
+      function onClick(e) {
+        //挖洞 2
+        if(bulletCount > 0){
+          bulletCount -= 1;
+          let fire=new Fire(350, 350);
+          components.push(fire);
+        }
+        /////////////////////////////////////////////////////////
+      }
+
+      window.addEventListener("click", onClick);
+    </script>
+  </body>
+</html>
